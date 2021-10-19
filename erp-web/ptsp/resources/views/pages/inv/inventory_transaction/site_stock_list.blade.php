@@ -1,0 +1,99 @@
+@extends('theme.default')
+
+@section('breadcrumb')
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-5 align-self-center">
+            <h4 class="page-title">Site Stock</h4>
+            <div class="d-flex align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page">Site Stock</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('content')
+
+<div class="container-fluid">
+    <!-- basic table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Site Stock</h4>
+                    <div class="table-responsive">
+                        <table id="zero_config" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Site Name</th>
+                                    <th class="text-center">Material No</th>
+                                    <th class="text-center">Material Name</th>
+                                    <th class="text-center">Nilai Material</th>
+                                    <th class="text-center">Harga Satuan</th>
+                                    <th class="text-center">Satuan</th>
+                                    <th class="text-center">Stock In</th>
+                                    <th class="text-center">Stock Out</th>
+                                    <th class="text-center">Current Stock</th>
+                                    <th class="text-center">Last Update</th>
+                                    <th class="text-center">Umur</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                
+</div>
+
+<script src="{!! asset('theme/assets/libs/jquery/dist/jquery.min.js') !!}"></script>
+<script src="{!! asset('theme/assets/extra-libs/DataTables/datatables.min.js') !!}"></script>
+
+<script>
+$(document).ready(function(){
+    t = $('#zero_config').DataTable();
+    t.clear().draw(false);
+    $.ajax({
+        type: "GET",
+        url: "{{ URL::to('inventory/stok_json') }}", //json get site
+        dataType : 'json',
+        success: function(response){
+            arrData = response['data'];
+            console.log(arrData)
+            for(i = 0; i < arrData.length; i++){
+                last_update_in = arrData[i]['last_update_in'] == null ? '1990-01-01' : arrData[i]['last_update_in'].substr(0,10);
+                last_update_out = arrData[i]['last_update_out'] == null ? '1990-01-01' : arrData[i]['last_update_out'].substr(0,10);
+                last_update = new Date(last_update_in) > new Date(last_update_out) ? last_update_in : last_update_out;
+
+                t.row.add([
+                    '<div class="text-left">'+arrData[i]['sites']['name']+'</div>',
+                    '<div class="text-left">'+arrData[i]['m_items']['no']+'</div>',
+                    '<div class="text-left">'+arrData[i]['m_items']['name']+'</div>',
+                    '<div class="text-right">'+formatCurrency(arrData[i]['value'])+'</div>',
+                    '<div class="text-right">'+formatCurrency(arrData[i]['last_price'])+'</div>',
+                    '<div class="text-left">'+arrData[i]['m_units']['name']+'</div>',
+                    '<div class="text-center">'+parseFloat(arrData[i]['amount_in'])+'</div>',
+                    '<div class="text-center">'+parseFloat(arrData[i]['amount_out'])+'</div>',
+                    '<div class="text-center">'+parseFloat(arrData[i]['stok'])+'</div>',
+                    '<div class="text-center">'+formatDateID(new Date(last_update))+'</div>',
+                    '<div class="text-center">'+datediffnow(last_update)+'</div>',
+                ]).draw(false);
+            }
+        }
+    });
+});
+
+function datediffnow(date) {
+    dt1 = new Date(date);
+    dt2 = new Date();
+    return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
+}
+</script>
+
+@endsection

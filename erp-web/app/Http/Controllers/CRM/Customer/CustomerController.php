@@ -388,6 +388,7 @@ class CustomerController extends Controller
             'jabatan'               => $request->jabatan,
             'npwp'               => $request->npwp,
             'npwp_address'               => $request->alamat_npwp,
+            'flag'               => $request->flag,
             'm_employee_id'         => $request->sales
         ]);
         return redirect('customer');
@@ -435,7 +436,8 @@ class CustomerController extends Controller
                     'email'              => $request->email,
                     'jabatan'               => $request->jabatan,
                     'npwp'               => $request->npwp,
-                    'npwp_address'               => $request->alamat_npwp
+                    'npwp_address'               => $request->alamat_npwp,
+                    'flag'               => $request->flag
                 ]
             ]; 
             $response = $client->request('PUT', '', $reqBody); 

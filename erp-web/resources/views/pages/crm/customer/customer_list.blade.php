@@ -41,6 +41,7 @@
                                     <th class="text-center">No Telp & Fax</th>
                                     <th class="text-center">Alamat</th>
                                     <th class="text-center">Alamat (Sesuai NPWP)</th>
+                                    <th class="text-center">Flag</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -71,6 +72,7 @@ $('#customer_list').DataTable( {
         }},
         {"data": "address"},
         {"data": "npwp_address"},
+        {"data": "flag"},
         {"data": "id", "render" : function(data, type, row){
             return '<div class="text-center"><a hidden href="'+url+'/customer/detail/'+row.id+'"><button type="button" class="btn btn-info waves-effect waves-light btn-sm">Detail</button></a><a href="'+url+'/customer/edit/'+row.id+'"><button type="button" class="btn btn-success waves-effect waves-light btn-sm">Edit</button></a></div>'
         }}

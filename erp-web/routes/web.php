@@ -946,6 +946,13 @@ Route::group(['middleware' => 'auth', 'prefix' => '/master_warehouse'], function
         Route::get('/delete/{id}', 'INV\MasterController@deleteWarehouse');
         Route::get('/get_warehouse_by_site/{id}', 'INV\MasterController@getWarehouseBySite');
     });
+Route::group(['middleware' => 'auth', 'prefix' => '/master_harga_jual'], function(){
+    Route::resource('/', 'INV\MasterHargaJualController');
+    Route::get('/list', 'INV\MasterHargaJualController@GetItemJson');
+    Route::get('/{id}/edit', 'INV\MasterHargaJualController@edit');
+    Route::put('/{id}', 'INV\MasterHargaJualController@update');
+    Route::get('/delete/{id}', 'INV\MasterHargaJualController@destroy');
+});
 Route::group(['middleware' => 'auth', 'prefix' => '/pembelian_asset'], function(){
         Route::get('/', 'INV\PembelianAssetController@index');
         // Route::get('/create', 'INV\PembelianRutinController@create');

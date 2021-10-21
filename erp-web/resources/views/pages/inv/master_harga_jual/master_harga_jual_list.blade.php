@@ -28,7 +28,7 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">List Master Material</h4>
+                    <h4 class="card-title">List Master Harga Jual</h4>
                     <div class="table-responsive">
                         <table id="material_list" class="table table-striped table-bordered">
                             <thead>

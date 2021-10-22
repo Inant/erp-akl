@@ -19,6 +19,7 @@ class Controller extends BaseController
         $module = Request::segment(1);
         $menus = DB::table('menus')
                 ->where('url', $module)->get();
+        return $module;
         $menuId = $menus[0]->id;
         $userPermission = DB::table('user_permission')
                         ->where('menu_id', $menuId)

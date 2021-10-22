@@ -62,7 +62,7 @@ class MSequenceController extends Controller
                 $period_year = substr($period_year,2,2);
 
                 $period_month = strlen((string)$period_month) < 2 ? ('0'.(string)$period_month) : $period_month;
-                $transaction_number = 'SBY-'.$trx_value.'-'.$period_month.'-'.$period_year.'-'.$gen_seq_no;
+                $transaction_number = 'AKL-'.$trx_value.'-'.$period_year.'-'.$period_month.'-'.$gen_seq_no;
             } else {
                 $new_seq_no = 1;
 
@@ -86,7 +86,7 @@ class MSequenceController extends Controller
                 $period_year = substr($period_year,2,2);
 
                 $period_month = strlen((string)$period_month) < 2 ? ('0'.(string)$period_month) : $period_month;
-                $transaction_number = 'SBY-'.$trx_value.'-'.$period_month.'-'.$period_year.'-'.$gen_seq_no;
+                $transaction_number = 'AKL-'.$trx_value.'-'.$period_year.'-'.$period_month.'-'.$gen_seq_no;
             }
 
 

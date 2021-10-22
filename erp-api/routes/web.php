@@ -292,3 +292,7 @@ $router->group(['middleware' => 'auth', 'prefix' => 'service'], function () use 
     $router->get('all_close',  ['uses' => 'INV\PurchaseController@getAllClosePurchaseService']);
 });
 
+$router->group(['prefix' => 'penjualan'], function () use ($router) {
+    $router->get('penawaran', ['uses' => 'Penjualan\PenawaranController@getPenawaranList']);
+});
+

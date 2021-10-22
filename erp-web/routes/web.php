@@ -1062,6 +1062,11 @@ Route::group(['middleware' => 'auth', 'prefix' => '/penerimaan_service'], functi
 //     })->where('any', '.*');
 // });
 
+Route::group(['middleware' => 'auth', 'prefix' => '/penjualan'], function(){
+    Route::get('/penawaran', 'Penjualan\PenawaranController@index');
+    Route::get('/penawaran/list', 'Penjualan\PenawaranController@index');
+});
+
 Route::get('/unauthorized', function () {
     return view('unauthorized');
 });

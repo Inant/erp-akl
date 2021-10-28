@@ -1063,8 +1063,22 @@ Route::group(['middleware' => 'auth', 'prefix' => '/penerimaan_service'], functi
 // });
 
 Route::group(['middleware' => 'auth', 'prefix' => '/penjualan'], function(){
-    Route::get('/penawaran', 'Penjualan\PenawaranController@index');
-    Route::get('/penawaran/list', 'Penjualan\PenawaranController@index');
+    Route::get('/penawaran/list', 'Penjualan\PenawaranController@listPenawaranJson');
+    Route::get('/penawaran/get-alamat-customer', 'Penjualan\PenawaranController@getAlamatCustomer');
+    Route::get('/penawaran/get-all-items', 'Penjualan\PenawaranController@getAllItems');
+    Route::get('/penawaran/get-item-price', 'Penjualan\PenawaranController@getItemPrice');
+    Route::resource('/penawaran', 'Penjualan\PenawaranController');
+
+    Route::get('/sales-order/list', 'Penjualan\SalesOrderController@listSalesOrderJson');
+    Route::get('/sales-order/create/{idPenawaran}', 'Penjualan\SalesOrderController@create');
+    Route::get('/sales-order/get-item-by-penawaran/{idPenawaran}', 'Penjualan\SalesOrderController@getItems');
+    Route::post('/sales-order/store', 'Penjualan\SalesOrderController@store');
+    Route::get('/sales-order-detail/{id}', 'Penjualan\SalesOrderController@detail');
+    Route::get('/pembayaran-sales-order', 'Penjualan\SalesOrderController@pembayaranSalesOrder');
+    Route::get('/pembayaran-sales-order/{id}', 'Penjualan\SalesOrderController@formPembayaranSalesOrder');
+    Route::get('/pembayaran-sales-order/get-item/{id}', 'Penjualan\SalesOrderController@getSalesOrderItems');
+    Route::post('/pembayaran-sales-order/store-pembayaran', 'Penjualan\SalesOrderController@storePembayaran');
+    Route::resource('/sales-order', 'Penjualan\SalesOrderController');
 });
 
 Route::get('/unauthorized', function () {

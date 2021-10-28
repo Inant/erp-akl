@@ -4,11 +4,11 @@
 <div class="page-breadcrumb">
     <div class="row">
         <div class="col-5 align-self-center">
-            <h4 class="page-title">Penawaran</h4>
+            <h4 class="page-title">Pembayaran Sales Order</h4>
             <div class="d-flex align-items-center">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item active" aria-current="page">Penawaran</li>
+                        <li class="breadcrumb-item active" aria-current="page">Pembayaran Sales Order</li>
                     </ol>
                 </nav>
             </div>
@@ -23,20 +23,22 @@
     <!-- basic table -->
     <div class="row">
         <div class="col-12">
-            <div class="text-right">
+            {{-- <div class="text-right">
                 <a href="{{ URL::to('penjualan/penawaran/create') }}"><button class="btn btn-success btn-sm mb-2"><i class="fas fa-plus"></i>&nbsp; Create Penawaran</button></a>
-            </div>
+            </div> --}}
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">List Penawaran</h4>
+                    <h4 class="card-title">List Sales Order</h4>
                     <div class="table-responsive">
-                        <table id="list_penawaran" class="table table-striped table-bordered">
+                        <table id="list_sales_order" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
+                                    <th class="text-center">Nomor Sales Order</th>
                                     <th class="text-center">Nomor Penawaran</th>
                                     <th class="text-center">Site</th>
-                                    <th class="text-center">Tanggal Penawaran</th>
-                                    <th class="text-center">Total Penawaran</th>
+                                    <th class="text-center">Tanggal</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center">Terbayar</th>
                                     <th class="text-center">Customer</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -49,7 +51,7 @@
     </div>       
 </div>
 
-<div class="modal fade bs-example-modal-lg" id="modalTransferDetail" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+<div class="modal fade bs-example-modal-lg" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -64,8 +66,7 @@
                             <tr>
                                 <th class="text-center">Material No</th>
                                 <th class="text-center">Material Name</th>
-                                <th class="text-center">Qty Penawaran</th>
-                                <th class="text-center">Qty Dikirim</th>
+                                <th class="text-center">Qty</th>
                                 <th class="text-center">Harga Satuan</th>
                                 <th class="text-center">Satuan</th>
                             </tr>
@@ -89,21 +90,34 @@
 
 var t2 = $('#zero_config2').DataTable();
 $(document).ready(function(){
-    $('#list_penawaran').DataTable( {
+
+    $.ajax({
+        type: "get",
+        url: "{{ URL::to('penjualan/sales-order/list') }}",
+        dataType: "json",
+        success: function (response) {
+            console.log(response)
+        }
+    });
+
+    $('#list_sales_order').DataTable( {
         "processing": true,
         "serverSide": true,
-        "ajax": "{{ URL::to('penjualan/penawaran/list') }}",
-        aaSorting: [[2, 'desc'],[0, 'desc']],
+        "ajax": "{{ URL::to('penjualan/sales-order/list') }}",
+        aaSorting: [[2, 'desc']],
         "columns": [
             {"data": "no"},
+            {"data": "no_penawaran"},
             {"data": "sites.name"},
-            {"data": "tanggal_penawaran", "class" : "text-center",
-            "render": function(data, type, row){return formatDateID(new Date((row.tanggal_penawaran)))}},
+            {"data": "tanggal", "class" : "text-center",
+            "render": function(data, type, row){return formatDateID(new Date((row.tanggal)))}},
             {"data": "total_amount", "class" : "text-right",
             "render": function(data, type, row){return formatCurrency(parseInt(row.total_amount).toString())}},
+            {"data": "terbayar", "class" : "text-right",
+            "render": function(data, type, row){return row.terbayar == null ? 0 : formatCurrency(parseInt(row.terbayar).toString())}},
             {"data": "coorporate_name"},
-            {"data": "in_sales_order",
-            "render": function(data, type, row){return row.in_sales_order == false ? '<div class="text-center"><a class="btn btn-sm btn-success text-white" href="{{url('penjualan/sales-order/create')}}/'+row.id+'"><i class="fas fa-plus"></i> Sales Order</a> <a class="btn btn-sm btn-danger text-white" onclick="javasciprt: return confirm(\'Are You Sure ?\')" href="{{url('penjualan/penawaran/delete')}}/'+row.id+'"><i class="fas fa-trash"></i>Delete</a></div>' : ''}},
+            {"data": "id",
+            "render": function(data, type, row){return '<div class="text-center"><button onclick="doShowDetail('+row.id+');" data-toggle="modal" data-target="#modalDetail" class="btn waves-effect waves-light btn-sm btn-info openModalTransferDetail">Detail</button> <a href="{{URL::to('penjualan/pembayaran-sales-order')}}/'+row.id+'" class="btn btn-sm btn-primary"> Pembayaran </a> </div>'}},
         ],
     } );
 });
@@ -112,18 +126,19 @@ function doShowDetail(id){
     t2.clear().draw(false);
     $.ajax({
             type: "GET",
-            url: "{{ URL::to('penjualan_keluar/pengajuan_detail') }}" + "/" + id, //json get site
+            url: "{{ URL::to('penjualan/sales-order-detail') }}" + "/" + id, //json get site
             dataType : 'json',
             success: function(response){
+                console.log(response)
                 arrData = response['data'];
                 for(i = 0; i < arrData.length; i++){
+                    console.log(arrData[i]['itemno'])
                     t2.row.add([
-                        '<div class="text-left">'+arrData[i]['m_items']['no']+'</div>',
-                        '<div class="text-left">'+arrData[i]['m_items']['name']+'</div>',
+                        '<div class="text-left">'+arrData[i]['itemno']+'</div>',
+                        '<div class="text-left">'+arrData[i]['itemname']+'</div>',
                         '<div class="text-right">'+parseFloat(arrData[i]['amount'])+'</div>',
-                        '<div class="text-right">'+parseFloat(arrData[i]['total_used'])+'</div>',
                         '<div class="text-right">'+formatCurrency(arrData[i]['base_price'])+'</div>',
-                        '<div class="text-center">'+arrData[i]['m_units']['name']+'</div>'
+                        '<div class="text-center">'+arrData[i]['unitname']+'</div>'
                     ]).draw(false);
                 }
             }

@@ -27,20 +27,20 @@ use DB;
 
 class PenawaranController extends Controller
 {
-  public function getPenjualanKeluarList() {
+    public function getPenawaranList() {
     $site_id = null;
     if(isset($_GET['site_id']))
         $site_id = $_GET['site_id'];
 
     if ($site_id != null) {
         $query = 'select 
-                (SELECT SUM(amount*subtotal) FROM penawaran_detail WHERE penawaran_id = penawaran.id) AS total_amount,
+                (SELECT SUM(amount*base_price) FROM penawaran_detail WHERE penawaran_id = penawaran.id) AS total_amount,
                 penawaran.*, customers.coorporate_name 
             from penawaran left join customers on customers.id=penawaran.customer_id WHERE penawaran.site_id = ?';
         $datas = DB::select($query, [$site_id]);
     } else {
         $query = 'select 
-                (SELECT SUM(amount*subtotal) FROM penawaran_detail WHERE penawaran_id = penawaran.id) AS total_amount,
+                (SELECT SUM(amount*base_price) FROM penawaran_detail WHERE penawaran_id = penawaran.id) AS total_amount,
                 penawaran.*, customers.coorporate_name 
             from penawaran left join customers on customers.id=penawaran.customer_id';
         $datas = DB::select($query);

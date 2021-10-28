@@ -68,6 +68,7 @@ class Controller extends BaseController
     {
         $modelClass = "App\\Models\\".$model;
         $message = '';
+        $object = '';
         try {
             $message ='sukses';
             $object = $modelClass::create($request->all());

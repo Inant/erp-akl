@@ -294,5 +294,7 @@ $router->group(['middleware' => 'auth', 'prefix' => 'service'], function () use 
 
 $router->group(['prefix' => 'penjualan'], function () use ($router) {
     $router->get('penawaran', ['uses' => 'Penjualan\PenawaranController@getPenawaranList']);
+
+    $router->get('sales-order', ['uses' => 'Penjualan\SalesOrderController@getSalesOrderList']);
 });
 

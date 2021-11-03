@@ -3282,7 +3282,8 @@ class PengambilanBarangController extends Controller
                         $id_akun=($value['type'] == 'material' ?  ($value['m_warehouse_id'] == 2 ? 141 : 142) : ($value['m_warehouse_id'] == 2 ? 143 : 144));
                         $akun=array(
                             'id_trx_akun'   => $id_last,
-                            'id_akun'       => ($value['type'] == 'material' ? $account_project->cost_material_id : $account_project->cost_spare_part_id),
+                            // 'id_akun'       => ($value['type'] == 'material' ? $account_project->cost_material_id : $account_project->cost_spare_part_id),
+                            'id_akun'       => ($value['type'] == 'material' ? 5755 : 5756),
                             'jumlah'        => $value['total'],
                             'tipe'          => "DEBIT",
                             'keterangan'    => 'lawan',
@@ -3313,7 +3314,7 @@ class PengambilanBarangController extends Controller
     }
     private function journalPengembalian($data){
         $project_req_developments=DB::table('project_req_developments')->where('id', $data['project_req_development_id'])->first();
-        $account_project=DB::table('account_projects')->where('order_id', $project_req_developments->order_id)->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $project_req_developments->order_id)->first();
 
         $id_akun=($data['type'] == 'material' ?  ($data['m_warehouse_id'] == 2 ? 141 : 142) : ($data['m_warehouse_id'] == 2 ? 143 : 144));
         $data_trx=array(
@@ -3334,14 +3335,17 @@ class PengambilanBarangController extends Controller
                 'jumlah'        => $data['total'],
                 'tipe'          => "DEBIT",
                 'keterangan'    => 'lawan',
+                'order_id'      => $project_req_developments->order_id
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($akun);
             $lawan=array(
                 'id_trx_akun'   => $id_last,
-                'id_akun'       => ($data['type'] == 'material' ? $account_project->cost_material_id : $account_project->cost_spare_part_id),
+                // 'id_akun'       => ($data['type'] == 'material' ? $account_project->cost_material_id : $account_project->cost_spare_part_id),
+                'id_akun'       => ($data['type'] == 'material' ? 5755 : 5756),
                 'jumlah'        => $data['total'],
                 'tipe'          => "KREDIT",
                 'keterangan'    => 'akun',
+                'order_id'      => $project_req_developments->order_id
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($lawan);
         }

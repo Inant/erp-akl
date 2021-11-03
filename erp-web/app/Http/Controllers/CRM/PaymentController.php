@@ -123,7 +123,7 @@ class PaymentController extends Controller
         } catch(RequestException $exception) {
         }
         $project_dev=DB::table('project_req_developments')->where('id', $request->input('req_id'))->first();
-        $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
         $input_jurnal=array(
             'payment_id'    => $payment['id'],
             'payment_per_week_id'   => null,
@@ -134,7 +134,7 @@ class PaymentController extends Controller
             'total' => $this->currency($request->input('total')),
             'user_id'   => $this->user_id,
             'akun'      => $request->input('account_payment'),
-            'lawan'      => $account_project->cost_service_id,
+            'lawan'      => 5757, //biaya dalam proses jasa 1.1.5.1.3
             'deskripsi'     => 'Pembayaran SDM '.($request->input('is_out_source') ? 'Out Sourcing' : '').' '.($request->input('trx_type') == 'PAY_PROD' ? 'Produksi' : '').' dari No Permintaan '.$project_dev->no,
             'tgl'       => date('Y-m-d'),
             'location_id'   => $this->site_id
@@ -254,7 +254,7 @@ class PaymentController extends Controller
         }
         
         $project_dev=DB::table('project_req_developments')->where('id', $request->input('req_id'))->first();
-        $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
         $input_jurnal=array(
             'payment_id'    => $payment['id'],
             'payment_per_week_id'   => null,
@@ -265,7 +265,7 @@ class PaymentController extends Controller
             'total' => $this->currency($request->input('total')),
             'user_id'   => $this->user_id,
             'akun'      => $request->input('account_payment'),
-            'lawan'      => $account_project->cost_service_id,
+            'lawan'      => 5757,
             'deskripsi'     => 'Pembayaran Biaya '.($request->input('is_production') ? 'Produksi ' : '').' dari No Permintaan '.$project_dev->no,
             'tgl'       => date('Y-m-d'),
             'location_id'   => $this->site_id
@@ -474,7 +474,7 @@ class PaymentController extends Controller
             } catch(RequestException $exception) {
             }   
             $project_dev=DB::table('project_req_developments')->where('id', $req_id[$i])->first();
-            $account_project=DB::table('account_projects')->where('order_id', $order_id[$i])->first();
+            // $account_project=DB::table('account_projects')->where('order_id', $order_id[$i])->first();
             $input_jurnal=array(
                 'payment_id'    => null,
                 'payment_per_week_id'   => null,
@@ -485,7 +485,7 @@ class PaymentController extends Controller
                 'total' => $this->currency($amount[$i]),
                 'user_id'   => $this->user_id,
                 'akun'      => 149,
-                'lawan'      => $account_project->cost_service_id,
+                'lawan'      => 5757,
                 'deskripsi'     => 'Pembayaran '.$notes[$i].' '.($check_production[$i] == 1 ? 'Produksi' : '').' dari No Permintaan '.$project_dev->no,
                 'tgl'       => date('Y-m-d'),
                 'location_id'   => $this->site_id
@@ -655,6 +655,7 @@ class PaymentController extends Controller
                 'jumlah'        => $data['total'],
                 'tipe'          => "DEBIT",
                 'keterangan'    => 'lawan',
+                'order_id' => $data['order_id'],
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($lawan);
             if($data['lawan'] == 24 || $data['lawan'] == 101){
@@ -671,7 +672,8 @@ class PaymentController extends Controller
                 'jumlah'        => $data['total'],
                 'tipe'          => "KREDIT",
                 'keterangan'    => 'akun',
-                'no'            => $no
+                'no'            => $no,
+                'order_id' => $data['order_id'],
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($akun);
             if($data['akun'] == 24 || $data['akun'] == 101){
@@ -1928,9 +1930,11 @@ class PaymentController extends Controller
             'm_supplier_id' => $request->input('suppl_single'),
             'deskripsi'     => 'Pembuatan Tagihan Pengadaan / Pemasangan No '.$bill_no,
             'tgl'       => $request->date_create,
-            'lawan'      => $account_project != null ? $account_project->cost_service_id : 108,
+            // 'lawan'      => $account_project != null ? $account_project->cost_service_id : 108,
+            'lawan'      => 5757,
             'akun'      => 147,
-            'location_id'   => $this->site_id
+            'location_id'   => $this->site_id,
+            'order_id' => $order_id,
         );
         $this->journalBillVendor($input_jurnal);
         
@@ -1954,6 +1958,7 @@ class PaymentController extends Controller
                 'jumlah'        => $data['total'],
                 'tipe'          => "DEBIT",
                 'keterangan'    => 'akun',
+                'order_id' => $data['order_id'],
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($akun);
             
@@ -1964,6 +1969,7 @@ class PaymentController extends Controller
                     'jumlah'        => $data['ppn'],
                     'tipe'          => "DEBIT",
                     'keterangan'    => 'akun',
+                    'order_id' => $data['order_id'],
                 );
                 DB::table('tbl_trx_akuntansi_detail')->insert($ppn);
             }
@@ -1974,6 +1980,7 @@ class PaymentController extends Controller
                     'jumlah'        => $data['pph'],
                     'tipe'          => "KREDIT",
                     'keterangan'    => 'akun',
+                    'order_id' => $data['order_id'],
                 );
                 DB::table('tbl_trx_akuntansi_detail')->insert($ppn);
             }
@@ -1983,6 +1990,7 @@ class PaymentController extends Controller
                 'jumlah'        => ($data['total'] + $data['ppn']) - $data['pph'],
                 'tipe'          => "KREDIT",
                 'keterangan'    => 'lawan',
+                'order_id' => $data['order_id'],
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($lawan);
             

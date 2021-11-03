@@ -1590,7 +1590,7 @@ class AkuntanController extends Controller
                 if ($order_id == $k->id) {
                     $get_project_dev=DB::table('project_req_developments')->where('order_id', $k->id)->get();
                     $akun_pendapatan=DB::table('tbl_akun_detail')->whereIn('id_parent', [4])->pluck('id_akun');
-                    $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
+                    // $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
                     // $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [5, 25, 26, 27])->pluck('id_akun');
                     $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [1])->pluck('id_akun');
                     foreach ($get_project_dev as $key => $value) {
@@ -1600,7 +1600,9 @@ class AkuntanController extends Controller
                                             ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                                             ->where('tra.project_req_development_id', $value->id)
                                             // ->whereNotIn('trd.id_akun', [$account_project->cost_service_id])
-                                            ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                            // ->where('trd.id_akun', [$account_project->cost_service_id])
+                                            ->where('trd.id_akun', 5757) //akun biaya dalam proses proyek jasa
+                                            ->where('trd.order_id', $k->id)
                                             ->groupBy('trd.id_akun')
                                             ->get();
                         $value->prd_detail=$trx_akuntan;
@@ -1627,7 +1629,7 @@ class AkuntanController extends Controller
             }else{
                 $get_project_dev=DB::table('project_req_developments')->where('order_id', $k->id)->get();
                 $akun_pendapatan=DB::table('tbl_akun_detail')->whereIn('id_parent', [4])->pluck('id_akun');
-                $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
+                // $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
                 // $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [5, 25, 26, 27])->pluck('id_akun');
                 $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [1])->pluck('id_akun');
                 foreach ($get_project_dev as $key => $value) {
@@ -1637,7 +1639,9 @@ class AkuntanController extends Controller
                                         ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                                         ->where('tra.project_req_development_id', $value->id)
                                         // ->whereNotIn('trd.id_akun', [$account_project->cost_service_id])
-                                        ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                        // ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                        ->where('trd.id_akun', 5757) //akun biaya dalam proses proyek jasa
+                                        ->where('trd.order_id', $k->id)
                                         ->groupBy('trd.id_akun')
                                         ->get();
                     $value->prd_detail=$trx_akuntan;
@@ -1761,7 +1765,7 @@ class AkuntanController extends Controller
         
         $orders=DB::table('orders')->select('orders.*', 'customers.coorporate_name')->join('customers', 'customers.id', 'orders.customer_id')->where('orders.site_id', $site_id)->get();
         foreach ($orders as $key => $value) {
-            $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
+            // $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
             $get_project_dev=DB::table('project_req_developments')->where('order_id', $value->id)->pluck('id');
             $pendapatan=DB::table('tbl_trx_akuntansi as tra')
                                 ->join('tbl_trx_akuntansi_detail as trd', 'tra.id_trx_akun', 'trd.id_trx_akun')
@@ -1769,7 +1773,9 @@ class AkuntanController extends Controller
                                 ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                                 // ->whereIn('tra.project_req_development_id', $get_project_dev)
                                 // ->orWhere('tra.order_id', $value->id)
-                                ->whereIn('trd.id_akun', [$account_project->profit_id])
+                                // ->whereIn('trd.id_akun', [$account_project->profit_id])
+                                ->where('trd.id_akun', 5760) //akun pendapatan proyek 4.1.1.0
+                                ->where('trd.order_id', $value->id)
                                 ->groupBy('trd.id_akun')
                                 ->get();
             $value->pendapatan=$pendapatan;
@@ -3225,9 +3231,10 @@ class AkuntanController extends Controller
         if($request->customer_project_id){
             $getOrder = DB::table('orders')->where('customer_project_id', $request->customer_project_id)->orderBy('id', 'ASC')->get();
             foreach($getOrder as $key => $value){
-                $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
+                // $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
                 $install_order=DB::table('install_orders')->where('order_id', $value->id)->pluck('id');
-                $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', $account_project->dp_id)->get();
+                // $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', $account_project->dp_id)->get();
+                $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', 5759)->where('order_id', $value->id)->get();
                 // dd($account_project);
                 $bill=DB::table('customer_bills')
                             ->where('order_id', $value->id)
@@ -3254,7 +3261,9 @@ class AkuntanController extends Controller
     
                 $biaya=DB::table('tbl_trx_akuntansi_detail as trd')
                                 ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
-                                ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                // ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                                ->where('trd.order_id', $value->id)
                                 ->where('tipe', 'DEBIT')
                                 ->select(DB::raw('COALESCE(SUM(jumlah), 0) as total'))
                                 ->first();
@@ -3262,7 +3271,9 @@ class AkuntanController extends Controller
                                 ->select(DB::raw('SUM(trd.jumlah) as total'), DB::raw('MAX(ta.no_akun) as no_akun'), DB::raw('MAX(ta.nama_akun) as nama_akun'), DB::raw('MAX(tra.tanggal) as tanggal'), DB::raw('MAX(tra.inv_trx_id) as inv_trx_id'), 'tra.id_trx_akun')
                                 ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
                                 ->join('tbl_akun as ta', 'ta.id_akun', 'trd.id_akun')
-                                ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                // ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                                ->where('trd.order_id', $value->id)
                                 ->where('trd.tipe', 'DEBIT')
                                 ->groupBy('tra.id_trx_akun')
                                 ->get();
@@ -3298,9 +3309,9 @@ class AkuntanController extends Controller
         if($id){
             $getOrder = DB::table('orders')->where('customer_project_id', $id)->orderBy('id', 'ASC')->get();
             foreach($getOrder as $key => $value){
-                $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
+                // $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
                 $install_order=DB::table('install_orders')->where('order_id', $value->id)->pluck('id');
-                $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', $account_project->dp_id)->get();
+                $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', 5759)->where('order_id', $value->id)->get();
                 // dd($account_project);
                 $bill=DB::table('customer_bills')
                             ->where('order_id', $value->id)
@@ -3327,7 +3338,9 @@ class AkuntanController extends Controller
     
                 $biaya=DB::table('tbl_trx_akuntansi_detail as trd')
                                 ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
-                                ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                // ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                                ->where('trd.order_id', $value->id)
                                 ->where('tipe', 'DEBIT')
                                 ->select(DB::raw('COALESCE(SUM(jumlah), 0) as total'))
                                 ->first();
@@ -3335,7 +3348,9 @@ class AkuntanController extends Controller
                                 ->select(DB::raw('SUM(trd.jumlah) as total'), DB::raw('MAX(ta.no_akun) as no_akun'), DB::raw('MAX(ta.nama_akun) as nama_akun'), DB::raw('MAX(tra.tanggal) as tanggal'), DB::raw('MAX(tra.inv_trx_id) as inv_trx_id'), 'tra.id_trx_akun')
                                 ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
                                 ->join('tbl_akun as ta', 'ta.id_akun', 'trd.id_akun')
-                                ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                // ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                                ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                                ->where('trd.order_id', $value->id)
                                 ->where('trd.tipe', 'DEBIT')
                                 ->groupBy('tra.id_trx_akun')
                                 ->get();
@@ -3394,9 +3409,11 @@ class AkuntanController extends Controller
         }
         $data_temp=array();
         if($request->order_id){
-            $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+            // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
             $install_order=DB::table('install_orders')->where('order_id', $request->input('order_id'))->pluck('id');
-            $dp=DB::table('tbl_trx_akuntansi_detail')->join('tbl_trx_akuntansi', 'tbl_trx_akuntansi_detail.id_trx_akun', 'tbl_trx_akuntansi.id_trx_akun')->where('id_akun', $account_project->dp_id)->get();
+            $dp=DB::table('tbl_trx_akuntansi_detail')->join('tbl_trx_akuntansi', 'tbl_trx_akuntansi_detail.id_trx_akun', 'tbl_trx_akuntansi.id_trx_akun')->where('id_akun', 5759)->where('tbl_trx_akuntansi_detail.order_id', $request->input('order_id'))->get();
+            // $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', 5759)->where('order_id', $request->input('order_id'))->get();
+            // dd($dp);
             $bill=DB::table('customer_bills')
                         ->where('order_id', $request->input('order_id'))
                         ->orWhereIn('install_order_id', $install_order)
@@ -3422,7 +3439,9 @@ class AkuntanController extends Controller
 
             $biaya=DB::table('tbl_trx_akuntansi_detail as trd')
                             ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
-                            ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            // ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                            ->where('trd.order_id', $request->input('order_id'))
                             ->where('tipe', 'DEBIT')
                             ->select(DB::raw('COALESCE(SUM(jumlah), 0) as total'))
                             ->first();
@@ -3430,7 +3449,9 @@ class AkuntanController extends Controller
                             ->select(DB::raw('SUM(trd.jumlah) as total'), DB::raw('MAX(ta.no_akun) as no_akun'), DB::raw('MAX(ta.nama_akun) as nama_akun'), DB::raw('MAX(tra.tanggal) as tanggal'), DB::raw('MAX(tra.inv_trx_id) as inv_trx_id'), 'tra.id_trx_akun')
                             ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
                             ->join('tbl_akun as ta', 'ta.id_akun', 'trd.id_akun')
-                            ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            // ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                            ->where('trd.order_id', $request->input('order_id'))
                             ->where('trd.tipe', 'DEBIT')
                             ->groupBy('tra.id_trx_akun')
                             ->get();
@@ -3488,9 +3509,10 @@ class AkuntanController extends Controller
         }
         $data_temp=array();
         if($request->order_id){
-            $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+            // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
             $install_order=DB::table('install_orders')->where('order_id', $request->input('order_id'))->pluck('id');
-            $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', $account_project->dp_id)->get();
+            // $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', $account_project->dp_id)->get();
+            $dp=DB::table('tbl_trx_akuntansi_detail')->where('id_akun', 5759)->where('order_id', $request->input('order_id'))->get();
             // dd($account_project);
             $bill=DB::table('customer_bills')
                         ->where('order_id', $request->input('order_id'))
@@ -3517,7 +3539,9 @@ class AkuntanController extends Controller
 
             $biaya=DB::table('tbl_trx_akuntansi_detail as trd')
                             ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
-                            ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            // ->whereIn('id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                            ->where('trd.order_id', $request->input('order_id'))
                             ->where('tipe', 'DEBIT')
                             ->select(DB::raw('COALESCE(SUM(jumlah), 0) as total'))
                             ->first();
@@ -3525,7 +3549,9 @@ class AkuntanController extends Controller
                             ->select(DB::raw('SUM(trd.jumlah) as total'), DB::raw('MAX(ta.no_akun) as no_akun'), DB::raw('MAX(ta.nama_akun) as nama_akun'), DB::raw('MAX(tra.tanggal) as tanggal'), DB::raw('MAX(tra.inv_trx_id) as inv_trx_id'), 'tra.id_trx_akun')
                             ->join('tbl_trx_akuntansi as tra', 'tra.id_trx_akun', 'trd.id_trx_akun')
                             ->join('tbl_akun as ta', 'ta.id_akun', 'trd.id_akun')
-                            ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            // ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                            ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                            ->where('trd.order_id', $request->input('order_id'))
                             ->where('trd.tipe', 'DEBIT')
                             ->groupBy('tra.id_trx_akun')
                             ->get();
@@ -3738,7 +3764,7 @@ class AkuntanController extends Controller
         foreach ($profit as $key => $value) {
             if ($value['id_akun'] == 22) {
                 foreach ($value['data'] as $k => $v) {
-                    $account_project=DB::table('account_projects')->where('profit_id', $v['detail'][0]->id_akun)->first();
+                    // $account_project=DB::table('account_projects')->where('profit_id', $v['detail'][0]->id_akun)->first();
                     $hpp=DB::table('tbl_trx_akuntansi as tra')
                     ->join('tbl_trx_akuntansi_detail as trd', 'trd.id_trx_akun', 'tra.id_trx_akun')
                     ->select(DB::raw("COALESCE(SUM(CASE WHEN trd.tipe='DEBIT' THEN trd.jumlah ELSE 0 END), 0) as total_debit"), DB::raw("COALESCE(SUM(CASE WHEN trd.tipe='KREDIT' THEN trd.jumlah ELSE 0 END), 0) as total_kredit"))
@@ -3757,7 +3783,7 @@ class AkuntanController extends Controller
         
         $orders=DB::table('orders')->select('orders.*', 'customers.coorporate_name')->join('customers', 'customers.id', 'orders.customer_id')->where('orders.site_id', $site_id)->get();
         foreach ($orders as $key => $value) {
-            $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
+            // $account_project=DB::table('account_projects')->where('order_id', $value->id)->first();
             $get_project_dev=DB::table('project_req_developments')->where('order_id', $value->id)->pluck('id');
             $pendapatan=DB::table('tbl_trx_akuntansi as tra')
                                 ->join('tbl_trx_akuntansi_detail as trd', 'tra.id_trx_akun', 'trd.id_trx_akun')
@@ -3765,7 +3791,9 @@ class AkuntanController extends Controller
                                 ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                                 // ->whereIn('tra.project_req_development_id', $get_project_dev)
                                 // ->orWhere('tra.order_id', $value->id)
-                                ->whereIn('trd.id_akun', [$account_project->profit_id])
+                                // ->whereIn('trd.id_akun', [$account_project->profit_id])
+                                ->where('trd.id_akun',5760)
+                                ->where('trd.order_id', $value->id)
                                 ->groupBy('trd.id_akun')
                                 ->get();
             $value->pendapatan=$pendapatan;
@@ -3813,7 +3841,7 @@ class AkuntanController extends Controller
                 if ($order_id == $k->id) {
                     $get_project_dev=DB::table('project_req_developments')->where('order_id', $k->id)->get();
                     $akun_pendapatan=DB::table('tbl_akun_detail')->whereIn('id_parent', [4])->pluck('id_akun');
-                    $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
+                    // $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
                     // $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [5, 25, 26, 27])->pluck('id_akun');
                     $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [1])->pluck('id_akun');
                     foreach ($get_project_dev as $key => $value) {
@@ -3823,7 +3851,9 @@ class AkuntanController extends Controller
                                             ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                                             ->where('tra.project_req_development_id', $value->id)
                                             // ->whereNotIn('trd.id_akun', [$account_project->cost_service_id])
-                                            ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                            // ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                            ->where('trd.id_akun', 5757)
+                                            ->where('trd.order_id', $k->id)
                                             ->groupBy('trd.id_akun')
                                             ->get();
                         $value->prd_detail=$trx_akuntan;
@@ -3850,7 +3880,7 @@ class AkuntanController extends Controller
             }else{
                 $get_project_dev=DB::table('project_req_developments')->where('order_id', $k->id)->get();
                 $akun_pendapatan=DB::table('tbl_akun_detail')->whereIn('id_parent', [4])->pluck('id_akun');
-                $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
+                // $account_project=DB::table('account_projects')->where('order_id', $k->id)->first();
                 // $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [5, 25, 26, 27])->pluck('id_akun');
                 $akun_biaya=DB::table('tbl_akun_detail')->whereIn('id_parent', [1])->pluck('id_akun');
                 foreach ($get_project_dev as $key => $value) {
@@ -3860,7 +3890,10 @@ class AkuntanController extends Controller
                                         ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                                         ->where('tra.project_req_development_id', $value->id)
                                         // ->whereNotIn('trd.id_akun', [$account_project->cost_service_id])
-                                        ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                        // ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                        // ->whereIn('trd.id_akun', [$account_project->cost_service_id])
+                                        ->where('trd.id_akun', 5757)
+                                        ->where('trd.order_id', $k->id)
                                         ->groupBy('trd.id_akun')
                                         ->get();
                     $value->prd_detail=$trx_akuntan;

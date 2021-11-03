@@ -32,6 +32,7 @@
                                     <table class="table table-bordered table-striped" id="zero_config">
                                         <thead>
                                             <tr>
+                                                <th>Id Akun</th>
                                                 <th>No Akun</th>
                                                 <th>Nama Akun</th>
                                                 <th>Level</th>
@@ -42,6 +43,7 @@
                                         <tbody>
                                         @foreach($list as $value)
                                             <tr>
+                                                <td>{{$value['id_akun']}}</td>
                                                 <td>{{$value['no_akun']}}</td>
                                                 <td>{{$value['nama_akun']}}</td>
                                                 <td>{{$value['level']}}</td>

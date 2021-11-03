@@ -844,7 +844,7 @@ $client = new Client(['base_uri' => $this->base_api_url . '/crm/customerdatamain
     }
     private function journalPenyerahan($data){
         $project_req_developments=DB::table('project_req_developments')->where('id', $data['project_req_development_id'])->first();
-        $account_project=DB::table('account_projects')->where('order_id', $project_req_developments->order_id)->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $project_req_developments->order_id)->first();
         $data_trx=array(
             'deskripsi'     => $data['deskripsi'],
             'location_id'     => $data['location_id'],

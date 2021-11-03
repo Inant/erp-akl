@@ -841,6 +841,7 @@ Route::group(['middleware' => 'auth', 'prefix' => 'absensi'], function () {
     });
 
     Route::group(['middleware' => 'auth', 'prefix' => '/order'], function(){
+        // Route::get('/test-create-akun/{namaproyek}', 'INV\OrderController@createAccount');
         Route::get('/', 'INV\OrderController@index');
         Route::get('/create', 'INV\OrderController@create');
         Route::get('/edit/{id}', 'INV\OrderController@edit');

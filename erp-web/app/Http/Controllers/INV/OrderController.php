@@ -365,31 +365,31 @@ class OrderController extends Controller
                 'alert-type' => 'error'
             );
         }
-        $account_project=$this->createAccount('Order '.$ord_no);
-        try
-        {
-            $headers = [
-                'Authorization' => 'Bearer ' . auth()->user()['remember_token'],        
-                'Accept'        => 'application/json',
-            ];
-            $client = new Client(['base_uri' => $this->base_api_url . 'inv/base/AccountProject']);
-            $reqBody = [
-                'headers' => $headers,
-                'json' => [
-                    'customer_id' => $request->input('customer_id'),
-                    'order_id' => $order->id,
-                    'cost_material_id' => $account_project['id_cm1'],
-                    'cost_spare_part_id' => $account_project['id_sp'],
-                    'cost_service_id' => $account_project['id_j'],
-                    'cost_finish_project_id' => $account_project['id_cp'],
-                    'dp_id' => $account_project['id_dp'],
-                    'profit_id' => $account_project['id_pp'],
-                ]
-            ]; 
+        // $account_project=$this->createAccount('Order '.$ord_no);
+        // try
+        // {
+        //     $headers = [
+        //         'Authorization' => 'Bearer ' . auth()->user()['remember_token'],        
+        //         'Accept'        => 'application/json',
+        //     ];
+        //     $client = new Client(['base_uri' => $this->base_api_url . 'inv/base/AccountProject']);
+        //     $reqBody = [
+        //         'headers' => $headers,
+        //         'json' => [
+        //             'customer_id' => $request->input('customer_id'),
+        //             'order_id' => $order->id,
+        //             'cost_material_id' => $account_project['id_cm1'],
+        //             'cost_spare_part_id' => $account_project['id_sp'],
+        //             'cost_service_id' => $account_project['id_j'],
+        //             'cost_finish_project_id' => $account_project['id_cp'],
+        //             'dp_id' => $account_project['id_dp'],
+        //             'profit_id' => $account_project['id_pp'],
+        //         ]
+        //     ]; 
             
-            $response = $client->request('POST', '', $reqBody); 
-        } catch(RequestException $exception) {
-        }
+        //     $response = $client->request('POST', '', $reqBody); 
+        // } catch(RequestException $exception) {
+        // }
         return redirect('/order')->with('notification');
     }
 
@@ -846,7 +846,7 @@ class OrderController extends Controller
         // $total_ppn=($total == $sub_total ? (($total + $total_addendum) * (1/10)) : ($total * (1/10)));
         // $save_total=$total_all / 1.1;
         $total_ppn=$total_all * 0.1;
-        $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
         $input_jurnal=array(
             'order_id' => $request->input('order_id'),
             'customer_id' => $order->customer_id,
@@ -860,8 +860,10 @@ class OrderController extends Controller
             'deskripsi'     => 'Pembuatan Tagihan '.$request->input('deskripsi').' No Order '.$order->order_no,
             'tgl'       => $request->date_create,
             'akun'      => 151,
-            'lawan'      => $account_project->dp_id,
-            'location_id'   => $this->site_id
+            // 'lawan'      => $account_project->dp_id,
+            'lawan'      => 5759, //kepala 2 uang muka proyek 2.1.10.1
+            'location_id'   => $this->site_id,
+
         );
         $this->journalOrderPayment($input_jurnal);
         if ($total == $sub_total) {
@@ -1003,7 +1005,8 @@ class OrderController extends Controller
                 'jumlah'        => ($data['total'] + ($data['ppn'] != 0 && $data['type_ppn'] == 'DEBIT' ? $data['ppn'] : 0)),
                 'tipe'          => "DEBIT",
                 'keterangan'    => 'akun',
-                'no'        => $no
+                'no'        => $no,
+                'order_id' => $data['order_id'],
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($akun);
             if($data['akun'] == 24 || $data['akun'] == 101){
@@ -1018,6 +1021,7 @@ class OrderController extends Controller
                 'jumlah'        => $data['total'] - $data['paid_more'],
                 'tipe'          => "KREDIT",
                 'keterangan'    => 'lawan',
+                'order_id' => $data['order_id'],
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($lawan);
             if($data['lawan'] == 24 || $data['lawan'] == 101){
@@ -1033,6 +1037,7 @@ class OrderController extends Controller
                     'jumlah'        => $data['ppn'],
                     'tipe'          => "KREDIT",
                     'keterangan'    => 'lawan',
+                    'order_id' => $data['order_id'],
                 );
                 DB::table('tbl_trx_akuntansi_detail')->insert($ppn);
             }
@@ -1043,6 +1048,7 @@ class OrderController extends Controller
                     'jumlah'        => $data['paid_more'],
                     'tipe'          => "KREDIT",
                     'keterangan'    => 'lawan',
+                    'order_id' => $data['order_id'],
                 );
                 DB::table('tbl_trx_akuntansi_detail')->insert($ppn);
             }
@@ -1341,13 +1347,15 @@ class OrderController extends Controller
                 }
             }
             $project_req_developments=DB::table('project_req_developments')->where('order_id', $cust_bill['order_id'])->pluck('id');
-            $account_project=DB::table('account_projects')->where('order_id', $cust_bill['order_id'])->first();
+            // $account_project=DB::table('account_projects')->where('order_id', $cust_bill['order_id'])->first();
             $trx_akuntan=DB::table('tbl_trx_akuntansi as tra')
                             ->join('tbl_trx_akuntansi_detail as trd', 'tra.id_trx_akun', 'trd.id_trx_akun')
                             ->join('tbl_akun as ta', 'trd.id_akun', 'ta.id_akun')
                             ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                             // ->whereIn('tra.project_req_development_id', $project_req_developments)
-                            ->whereIn('trd.id_akun', [$account_project->dp_id])
+                            // ->whereIn('trd.id_akun', [$account_project->dp_id])
+                            ->where('id_akun', 5759)
+                            ->where('order_id', $cust_bill['order_id'])
                             ->groupBy('trd.id_akun')
                             ->first();
             $order=DB::table('orders')->where('id', $cust_bill['order_id'])->first();
@@ -1357,8 +1365,10 @@ class OrderController extends Controller
                 'user_id'   => $this->user_id,
                 'deskripsi'     => 'Jurnal Pendapatan No Order '.$order->order_no,
                 'tgl'       => date('Y-m-d'),
-                'akun'      => $account_project->dp_id,
-                'lawan'      => $account_project->profit_id,
+                // 'akun'      => $account_project->dp_id,
+                'akun'      => 5759, //uang muka proyek
+                // 'lawan'      => $account_project->profit_id,
+                'lawan'      => 5760, //Pendapatan Proyek
                 'location_id'   => $this->site_id
             );
             $this->journalPendapatanProyek($input_jurnal);
@@ -1579,6 +1589,7 @@ class OrderController extends Controller
                 'jumlah'        => $data['total'],
                 'tipe'          => "DEBIT",
                 'keterangan'    => 'akun',
+                'order_id'   => $data['order_id']
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($akun);
             if($data['akun'] == 24 || $data['akun'] == 101){
@@ -1592,6 +1603,7 @@ class OrderController extends Controller
                 'jumlah'        => $data['total'],
                 'tipe'          => "KREDIT",
                 'keterangan'    => 'lawan',
+                'order_id'   => $data['order_id']
             );
             DB::table('tbl_trx_akuntansi_detail')->insert($lawan);
             if($data['lawan'] == 24 || $data['lawan'] == 101){
@@ -1603,13 +1615,15 @@ class OrderController extends Controller
     }
     public function closeProject($id){
         $project_req_developments=DB::table('project_req_developments')->where('order_id', $id)->pluck('id');
-        $account_project=DB::table('account_projects')->where('order_id', $id)->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $id)->first();
         $trx_akuntan=DB::table('tbl_trx_akuntansi as tra')
                         ->join('tbl_trx_akuntansi_detail as trd', 'tra.id_trx_akun', 'trd.id_trx_akun')
                         ->join('tbl_akun as ta', 'trd.id_akun', 'ta.id_akun')
                         ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                         // ->whereIn('tra.project_req_development_id', $project_req_developments)
-                        ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                        // ->whereIn('trd.id_akun', [$account_project->cost_material_id, $account_project->cost_spare_part_id, $account_project->cost_service_id])
+                        ->whereIn('trd.id_akun', [5755, 5756, 5757]) //akun biaya material, sparepart, jasa
+                        ->where('trd.order_id', $id)
                         ->groupBy('trd.id_akun')
                         ->get();
         $order=DB::table('orders')->where('id', $id)->first();
@@ -1631,7 +1645,9 @@ class OrderController extends Controller
                         ->join('tbl_akun as ta', 'trd.id_akun', 'ta.id_akun')
                         ->select(DB::raw("SUM(CASE WHEN tipe = 'DEBIT' THEN jumlah ELSE 0 END) AS total_debit"), DB::raw("SUM(CASE WHEN tipe = 'KREDIT' THEN jumlah ELSE 0 END) AS total_kredit"), 'trd.id_akun', DB::raw('MAX(sifat_debit) as sifat_debit'), DB::raw('MAX(sifat_kredit) as sifat_kredit'), DB::raw('MAX(nama_akun) as nama_akun'))
                         // ->whereIn('tra.project_req_development_id', $project_req_developments)
-                        ->whereIn('trd.id_akun', [$account_project->dp_id])
+                        // ->whereIn('trd.id_akun', [$account_project->dp_id])
+                        ->where('id_akun', 5759) 
+                        ->where('order_id', $id)
                         ->groupBy('trd.id_akun')
                         ->get();
         foreach ($trx_dp as $key => $value) {
@@ -1641,7 +1657,8 @@ class OrderController extends Controller
                 'user_id'   => $this->user_id,
                 'deskripsi'     => 'Jurnal Pendapatan Proyek No Order '.$order->order_no,
                 'tgl'       => date('Y-m-d'),
-                'lawan'      => $account_project->profit_id,
+                // 'lawan'      => $account_project->profit_id,
+                'lawan'      => 5760, //pendapatan proyek
                 'akun'      => $value->id_akun,
                 'location_id'   => $this->site_id
             );
@@ -2127,7 +2144,7 @@ class OrderController extends Controller
         $total_pph=$request->input('with_pph') ? ($total_all * 0.02) : 0;
         // $total_all-=$total_pph;
         
-        $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
         $input_jurnal=array(
             'install_order_id' => $request->input('install_order_id'),
             'customer_id'   => $install_order->customer_id,
@@ -2614,7 +2631,7 @@ class OrderController extends Controller
         }
         $order=DB::table('orders')->where('id', $request->input('order_id'))->first();
         
-        $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
+        // $account_project=DB::table('account_projects')->where('order_id', $request->input('order_id'))->first();
         $input_jurnal=array(
             'order_id' => $request->input('order_id'),
             'customer_id' => $order->customer_id,
@@ -2625,7 +2642,8 @@ class OrderController extends Controller
             'deskripsi'     => 'Pembayaran No Order '.$order->order_no,
             'tgl'       => date('Y-m-d'),
             'akun'      => 20,
-            'lawan'      => $account_project->dp_id,
+            // 'lawan'      => $account_project->dp_id,
+            'lawan'      => 5759, //uang muka proyek
             'location_id'   => $this->site_id
         );
         $this->journalOrderPayment($input_jurnal);

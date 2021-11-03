@@ -15,7 +15,7 @@
     
 @endphp
 <center>
-    <h3><b>PT Prosperity Archilum</b></h3>
+    <h3><b>PT. Adhiusaha Kencana Lestari</b></h3>
     <h4><b>Neraca Saldo</b></h4>
     <h5><b>per Tanggal {{formatDate($data['date1'])}} Sampai {{formatDate($data['date2'])}}</b></h5>
 </center>

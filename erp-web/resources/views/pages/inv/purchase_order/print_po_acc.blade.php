@@ -77,7 +77,7 @@ function penyebut($nilai) {
             </td>
             <td>CUSTOMER</td>
             <td>:</td>
-            <td>PT. PROSPERITY ARCHILUM</td>
+            <td>PT. Adhiusaha Kencana Lestari</td>
         </tr>
         <tr>
             <td style="width:50%">
@@ -141,7 +141,7 @@ function penyebut($nilai) {
             </td>
             <td>DELIVERY TO</td>
             <td>:</td>
-            <td>PT. PROSPERITY ARCHILUM</td>
+            <td>PT. Adhiusaha Kencana Lestari</td>
         </tr>
         <tr>
             <td style="width:50%">

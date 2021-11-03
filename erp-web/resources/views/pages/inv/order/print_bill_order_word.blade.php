@@ -125,7 +125,7 @@ function penyebut($nilai) {
     <table hidden style="width:100%">
     <tr>
         <td style="width:30%"></td>
-        <td align="right"><span style="font-size:18px"><b>PT. PROSPERITY ARCHILUM </b></span><br>
+        <td align="right"><span style="font-size:18px"><b>PT. Adhiusaha Kencana Lestari </b></span><br>
     Jl. Margomulyo No. 44, Blok FF/2A Surabaya - Indonesia <br>
     Kawasan Pergudangan Suri Mulia<br>
     Telp.(031) 7 483700 Fax.(031) 7483900<br></td>
@@ -234,7 +234,7 @@ function penyebut($nilai) {
         <tr>
             <td class="border-left"><b>Name</b></td>
             <td>:</td>
-            <td class="border-right"><b>PT. Prosperity Archilum</b></td>
+            <td class="border-right"><b>PT. Adhiusaha Kencana Lestari</b></td>
             <td></td>
             <td><b><i>AMOUNT PAID</i></b></td>
             <td class="text-right border">Rp. {{number_format($total_payment)}}</td>
@@ -259,7 +259,7 @@ function penyebut($nilai) {
             <td></td>
             <td></td>
             <td></td>
-            <td class="text-center" colspan="2">PT. Prosperity Archilum</td>
+            <td class="text-center" colspan="2">PT. Adhiusaha Kencana Lestari</td>
         </tr>
         <tr>
             <td colspan="3" style="width:50%;" class="border"><b>Terbilang :</b></td>

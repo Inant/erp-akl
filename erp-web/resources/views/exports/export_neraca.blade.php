@@ -71,7 +71,7 @@
 @endphp
     <table>
             <tr>
-                <th colspan="4">PT Prosperity Archilum</th>
+                <th colspan="4">PT. Adhiusaha Kencana Lestari</th>
             </tr>
             <tr>
                 <th colspan="4">Neraca</th>

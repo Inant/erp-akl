@@ -62,7 +62,7 @@ function penyebut($nilai) {
   <div>
     <!-- Title -->
     <!-- <div style="float:right">
-    <span style="font-size:18px"><b>PT. PROSPERITY ARCHILUM </b></span><br>
+    <span style="font-size:18px"><b>PT. Adhiusaha Kencana Lestari </b></span><br>
     Jl. Margomulyo No. 44 <br>
     Pergudangan Suri Mulia Blok FF/2A<br>
     Email : ptprosperity@yahoo.com<br>
@@ -110,7 +110,7 @@ function penyebut($nilai) {
     <!-- <table style="width:100%">
     <tr>
         <td style="width:30%"></td>
-        <td><span style="font-size:18px"><b>PT. PROSPERITY ARCHILUM </b></span><br>
+        <td><span style="font-size:18px"><b>PT. Adhiusaha Kencana Lestari </b></span><br>
     Jl. Margomulyo No. 44, Blok FF/2A Surabaya - Indonesia <br>
     Kawasan Pergudangan Suri Mulia<br>
     Telp.(031) 7 483700 Fax.(031) 7483900<br></td>
@@ -120,7 +120,7 @@ function penyebut($nilai) {
     <table style="width:100%">
         <thead>
             <tr>
-                <td colspan="3"><button style="font-size:12px; background-color:white; border-color: black; border:1px solid black; border-radius:5px"><p style="font-size:10px; font-style:italic; margin-left:40px">NB. Mohon Pembayaran ditransfer ke rekening atas nama PT. Prosperity Archilum <br> Danamon: 660.003.0800 / BCA :729 191 9999</p></button></td>
+                <td colspan="3"><button style="font-size:12px; background-color:white; border-color: black; border:1px solid black; border-radius:5px"><p style="font-size:10px; font-style:italic; margin-left:40px">NB. Mohon Pembayaran ditransfer ke rekening atas nama PT. Adhiusaha Kencana Lestari <br> Danamon: 660.003.0800 / BCA :729 191 9999</p></button></td>
             </tr>
             <tr>
                 <td style="width:40%" colspan="2"></td>

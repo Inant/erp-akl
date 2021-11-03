@@ -58,7 +58,7 @@ function penyebut($nilai) {
     <table width="100%">
         <tr>
             <td>
-                PT. PROSPERITY ARCHILUM <br>
+                PT. Adhiusaha Kencana Lestari <br>
                 Jl. Margomulyo No. 44 <br>
                 Pergudangan Suri Mulia Blok FF/2A<br>
                 Email : ptprosperity@yahoo.com<br>

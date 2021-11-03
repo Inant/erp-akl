@@ -61,7 +61,7 @@ function penyebut($nilai) {
             <div style="position: absolute; bottom: 0px;" class="title-print">PURCHASE ORDER</div>
             </td>
             <td class="text-right" style="color:#525659">
-                <span style="font-size:18px"><b>PT. PROSPERITY ARCHILUM </b></span><br>
+                <span style="font-size:18px"><b>PT. Adhiusaha Kencana Lestari </b></span><br>
                 Jl. Margomulyo No. 44 <br>
                 Pergudangan Suri Mulia Blok FF/2A<br>
                 Email : ptprosperity@yahoo.com<br>

@@ -389,7 +389,7 @@ class CustomerController extends Controller
             'npwp'               => $request->npwp,
             'npwp_address'               => $request->alamat_npwp,
             'flag'               => $request->flag,
-            'm_employee_id'         => $request->sales
+            // 'm_employee_id'         => $request->sales
         ]);
         return redirect('customer');
     }

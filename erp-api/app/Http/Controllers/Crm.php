@@ -51,7 +51,7 @@ class Crm extends Controller
     public function getCustomerDataMain()
     {
         $customers = DB::select("Select A.*, m.name as sales_name
-        from customers A left join m_employees m on A.m_employee_id = m.id where lower(A.family_role)='main'");
+        from customers A left join m_employees m on A.m_employee_id = m.id ");
         
         return response()->json(['data'=>$customers]);
     }

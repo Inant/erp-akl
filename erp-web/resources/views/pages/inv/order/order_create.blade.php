@@ -58,7 +58,7 @@
                             </div>
                             <div class="col-md-5 col-sm-12">
                                 <div class="form-group">
-                                    <label>No SPJB</label>
+                                    <label>No SPK</label>
                                     <input type="text" id="no_spk" name="no_spk" class="form-control" required>
                                 </div>
                             </div>

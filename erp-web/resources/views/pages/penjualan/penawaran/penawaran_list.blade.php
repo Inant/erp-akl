@@ -37,6 +37,7 @@
                                     <th class="text-center">Site</th>
                                     <th class="text-center">Tanggal Penawaran</th>
                                     <th class="text-center">Total Penawaran</th>
+                                    <th class="text-center">Biaya Pengiriman</th>
                                     <th class="text-center">Customer</th>
                                     <th class="text-center">Action</th>
                                 </tr>
@@ -101,9 +102,11 @@ $(document).ready(function(){
             "render": function(data, type, row){return formatDateID(new Date((row.tanggal_penawaran)))}},
             {"data": "total_amount", "class" : "text-right",
             "render": function(data, type, row){return formatCurrency(parseInt(row.total_amount).toString())}},
+            {"data": "biaya_pengiriman", "class" : "text-right",
+            "render": function(data, type, row){return formatCurrency(parseInt(row.biaya_pengiriman).toString())}},
             {"data": "coorporate_name"},
             {"data": "in_sales_order",
-            "render": function(data, type, row){return row.in_sales_order == false ? '<div class="text-center"><a class="btn btn-sm btn-success text-white" href="{{url('penjualan/sales-order/create')}}/'+row.id+'"><i class="fas fa-plus"></i> Sales Order</a> <a class="btn btn-sm btn-danger text-white" onclick="javasciprt: return confirm(\'Are You Sure ?\')" href="{{url('penjualan/penawaran/delete')}}/'+row.id+'"><i class="fas fa-trash"></i>Delete</a></div>' : ''}},
+            "render": function(data, type, row){return row.in_sales_order == false ? '<div class="text-center"><a class="btn btn-sm btn-success text-white" href="{{url('penjualan/sales-order/create')}}/'+row.id+'"><i class="fas fa-plus"></i> Sales Order</a> <a class="btn btn-sm btn-info text-white" href="{{url('penjualan/penawaran/edit')}}/'+row.id+'"><i class="fas fa-pencil-alt"></i> Edit</a> <a class="btn btn-sm btn-danger text-white" onclick="javasciprt: return confirm(\'Are You Sure ?\')" href="{{url('penjualan/penawaran/delete')}}/'+row.id+'"><i class="fas fa-trash"></i> Delete</a></div>' : ''}},
         ],
     } );
 });

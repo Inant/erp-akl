@@ -196,6 +196,18 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-row">
+                                        <div class="col-md-8 mb-3">
+                                            <label>Plafond Piutang</label>
+                                            <input type="number" name="plafond_piutang" id="plafond_piutang" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-md-8 mb-3">
+                                            <label>Jumlah Tagihan Maksimal</label>
+                                            <input type="number" name="jumlah_tagihan_maksimal" id="jumlah_tagihan_maksimal" class="form-control">
+                                        </div>
+                                    </div>
                                     <div class="row" hidden>
                                         <div class="col-md-1"></div>
                                         <div class="col-md-6">

@@ -11,6 +11,8 @@ use App\Http\Controllers\RAB\RabController;
 use App\Http\Controllers\Accounting\AkuntanController;
 use Carbon\Carbon;
 use DB;
+use Exception;
+use Illuminate\Database\QueryException;
 
 class PenawaranController extends Controller
 {
@@ -163,6 +165,8 @@ class PenawaranController extends Controller
         $rabcon = new RabController();
         $nomorPenawaran = $rabcon->generateTransactionNo('QO', $period_year, $period_month, $this->site_id );
         $sesuai_alamat_customer = $request->post('sesuai_alamat_customer');
+        $dengan_pengiriman = $request->post('dengan_pengiriman');
+        $biaya_pengiriman = $request->post('biaya_pengiriman');
         $penawaran = [];
         try
         {
@@ -185,7 +189,9 @@ class PenawaranController extends Controller
                     'alamat_kirim' => $alamat_kirim,
                     'diskon'    => $diskon,
                     'grandtotal'    => $grandtotal,
-                    'sesuai_alamat_customer' => $sesuai_alamat_customer
+                    'sesuai_alamat_customer' => $sesuai_alamat_customer,
+                    'dengan_pengiriman' => $dengan_pengiriman,
+                    'biaya_pengiriman' => $biaya_pengiriman,
                     ]
                 ]; 
                 $response = $client->request('POST', '', $reqBody); 
@@ -247,6 +253,39 @@ class PenawaranController extends Controller
         //     );
         // }
         
+        return redirect('penjualan/penawaran')->with($notification);
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            //delete penawaran detail
+            DB::table('penawaran_detail')->where('penawaran_id', $id)->delete();
+            
+            // delete penawaran
+            DB::table('penawaran')->where('id', $id)->delete();
+
+            DB::commit();
+            $notification = array(
+                'message' => 'Data berhasil dihapus.',
+                'alert-type' => 'success'
+            );
+        } catch (Exception $e) {
+            DB::rollBack();
+            $notification = array(
+                'message' => 'Gagal menghapus data.',
+                'alert-type' => 'danger'
+            );
+        }
+        catch(QueryException $e){
+            DB::rollBack();
+            $notification = array(
+                'message' => 'Gagal menghapus data.',
+                'alert-type' => 'danger'
+            );
+        }
+
         return redirect('penjualan/penawaran')->with($notification);
     }
 }

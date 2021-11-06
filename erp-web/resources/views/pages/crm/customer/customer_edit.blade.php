@@ -118,6 +118,18 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-row">
+                                        <div class="col-md-8 mb-3">
+                                            <label>Plafond Piutang</label>
+                                            <input type="number" name="plafond_piutang" id="plafond_piutang" class="form-control" value={{$customer['plafond_piutang']}}>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="col-md-8 mb-3">
+                                            <label>Jumlah Tagihan Maksimal</label>
+                                            <input type="number" name="jumlah_tagihan_maksimal" id="jumlah_tagihan_maksimal" class="form-control" value="{{$customer['jumlah_tagihan_maksimal']}}">
+                                        </div>
+                                    </div>
                                     <button class="btn btn-primary mt-4" type="submit">Submit</button>
                                     <a href="{{ URL::to('customer') }}" class="btn btn-danger mt-4">Batal</a>
                                 </form>

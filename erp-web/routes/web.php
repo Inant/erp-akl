@@ -1068,6 +1068,7 @@ Route::group(['middleware' => 'auth', 'prefix' => '/penjualan'], function(){
     Route::get('/penawaran/get-alamat-customer', 'Penjualan\PenawaranController@getAlamatCustomer');
     Route::get('/penawaran/get-all-items', 'Penjualan\PenawaranController@getAllItems');
     Route::get('/penawaran/get-item-price', 'Penjualan\PenawaranController@getItemPrice');
+    Route::get('/penawaran/delete/{id}', 'Penjualan\PenawaranController@delete');
     Route::resource('/penawaran', 'Penjualan\PenawaranController');
 
     Route::get('/sales-order/list', 'Penjualan\SalesOrderController@listSalesOrderJson');

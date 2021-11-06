@@ -56,7 +56,7 @@
                                     <select id="tipe_customer" name="tipe_customer" required
                                         class="form-control select2 custom-select" style="width: 100%; height:32px;">
                                         <option value="">--Pilih Tipe Customer --</option>
-                                        <option value="retail">Retail</option>
+                                        <option value="retail" selected>Retail</option>
                                         <option value="grosir">Grosir</option>
                                         <option value="distributor">Distributor</option>
                                     </select>
@@ -65,6 +65,18 @@
                                     <label>Tanggal Penawaran</label>
                                     <input type="date" value="{{ date('Y-m-d') }}" name="tanggal_penawaran" required
                                         class="form-control">
+                                </div>
+                                
+                                <div class="form-group col-md-6">
+                                    <label for="">Status Pengiriman</label>
+                                    <br>
+                                    <input type="checkbox" name="dengan_pengiriman" id="dengan_pengiriman" value="true"> <label
+                                        for="dengan_pengiriman">Dengan Pengiriman</label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="">Biaya Pengiriman</label>
+                                    <br>
+                                    <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="" class="form-control" readonly onkeyup="cekTotal()">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="">Pilih Material</label>
@@ -209,13 +221,22 @@
                 });
             });
 
-            $('input[type="checkbox"]').click(function() {
+            $('input[name="sesuai_alamat_customer"]').click(function() {
                 if ($(this).prop("checked") == true) {
                     $('#alamat_kirim').attr('readonly', true);
                     $('#alamat_kirim').val(temp_alamat);
                 } else if ($(this).prop("checked") == false) {
                     $('#alamat_kirim').attr('readonly', false);
                     $('#alamat_kirim').val('');
+                }
+            });
+
+            $('input[name="dengan_pengiriman"]').click(function() {
+                if ($(this).prop("checked") == true) {
+                    $('#biaya_pengiriman').attr('readonly', false);
+                } else if ($(this).prop("checked") == false) {
+                    $('#biaya_pengiriman').attr('readonly', true);
+                    $('#biaya_pengiriman').val('');
                 }
             });
         });
@@ -283,7 +304,7 @@
                                     //     '<input readonly id="stok_site[]" name="stok_site[]" type="number" class="form-control text-right" value="'+stok+'" />' +
                                     // '</td>'+
                                     '<td>' +
-                                    '<input type="number" id="price[]" name="price[]" step="any" min="0" class="form-control text-right" placeholder="0" required onkeyup="cekTotal()" value="' +
+                                    '<input type="number" readonly id="price[]" name="price[]" step="any" min="0" class="form-control text-right" placeholder="0" required onkeyup="cekTotal()" value="' +
                                     item_price + '" />' +
                                     '</td>' +
                                     '<td>' +
@@ -361,6 +382,7 @@
             var item = $('[name^=m_item_id');
             var price = $('[name^=price');
             var volume = $('[name^=qty');
+            var biaya_pengiriman = parseInt($('#biaya_pengiriman').val());
             var total = 0,
                 total_item = 0,
                 total = 0;
@@ -372,10 +394,11 @@
                     total += (parseFloat(amount) * parseFloat(harga));
                 }
             }
+            total += biaya_pengiriman;
             $('#total').val(formatCurrency(total.toFixed(0)))
             $('#total_temp').val(total.toFixed(0))
             $('#diskon').val(0)
-            $('#grandtotal').val(0)
+            $('#grandtotal').val(total)
             $('#grandtotal_temp').val(formatCurrency(total.toFixed(0)))
         }
 
@@ -383,7 +406,7 @@
             var total = parseFloat($('#total_temp').val());
             var diskon = parseFloat($(this).val());
             var grandtotal = total - diskon;
-            $('#grandtotal').val(grandtotal);
+            $('#grandtotal').val(grandtotal); 
             $('#grandtotal_temp').val(formatCurrency(grandtotal.toFixed(0)))
         });
     </script>

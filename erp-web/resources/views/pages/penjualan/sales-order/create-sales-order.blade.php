@@ -26,11 +26,6 @@
             <!-- basic table -->
             <div class="row">
                 <div class="col-12">
-
-                    <!--<div class="text-right">-->
-                    <!--    <a href="{{ URL::to('material_request') }}" class="btn btn-danger btn-sm mb-2">Cancel</a>-->
-                    <!--    <button id="btnSubmit" type="submit" disabled data-toggle="modal" data-target="#modalShowDetail" class="btn btn-info btn-sm mb-2">Submit</button>-->
-                    <!--</div>-->
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Sales Order</h4>
@@ -60,6 +55,17 @@
                                         value="{{ $penawaran->tipe_customer }}" class="form-control" readonly>
                                 </div>
                                 <div class="form-group col-md-6">
+                                    <label for="">Status Pengiriman</label>
+                                    <br>
+                                    <input type="checkbox" name="dengan_pengiriman" id="dengan_pengiriman" value="true" {{$penawaran->dengan_pengiriman == true ? 'checked' : ''}}> <label
+                                        for="dengan_pengiriman">Dengan Pengiriman</label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="">Biaya Pengiriman</label>
+                                    <br>
+                                    <input type="number" name="biaya_pengiriman" id="biaya_pengiriman" value="{{$penawaran->biaya_pengiriman}}" class="form-control" readonly onkeyup="cekTotal()">
+                                </div>
+                                <div class="form-group col-md-6">
                                     <label>Tanggal</label>
                                     <input type="date"
                                         value="{{ date('Y-m-d', strtotime($penawaran->tanggal_penawaran)) }}"
@@ -72,16 +78,17 @@
                                         <option value="">-- Choose Payment Method --</option>
                                         <option value="cash">Cash</option>
                                         <option value="credit">Credit</option>
+                                        <option value="down_payment">Down Payment</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6">
+                                {{-- <div class="form-group col-md-6">
                                     <label for="">Pilih Material</label>
                                     <br>
                                     <select class="form-control custom-select select2" style="width: 400px; height:32px;"
                                         id="item_id"></select>
                                     <button type="button" id="addRow" class="btn btn-success btn-sm mb-2"><i
                                             class="fas fa-plus"></i>&nbsp; Add New Detail</button>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="table-responsive">
                                 <table id="detail-sales-order" class="table table-striped table-bordered display"
@@ -118,7 +125,7 @@
                                                 <td>
                                                     <input type="number" id="price[]" name="price[]" step="any" min="0"
                                                         class="form-control text-right" placeholder="0" required
-                                                        onkeyup="cekTotal()" value="{{ $item->base_price }}" />
+                                                        onkeyup="cekTotal()" value="{{ $item->base_price }}" readonly />
                                                 </td>
                                                 <td>
                                                     <input type="hidden" name="temp_qty" id="temp_qty"
@@ -137,8 +144,11 @@
                                                         <option value=""> {{ $item->unitName }} </option>
                                                     </select>
                                                 </td>
-                                                <td class="text-center"><button class="btn btn-danger removeOption"><i
-                                                            class="mdi mdi-delete"></i></button></td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-danger removeOption">
+                                                        <i class="mdi mdi-delete"></i>
+                                                    </button>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -157,14 +167,15 @@
                                     <div class="float-right">
                                         <label for="">Diskon :</label>
                                         <input type="number" name="diskon" id="diskon" class="form-control"
-                                            style="height:50px; font-size:28px" value="{{ $penawaran->diskon }}">
+                                            style="height:50px; font-size:28px" value="{{ $penawaran->diskon }}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-lg-3">
                                     <div class="float-right">
                                         <label for="">Grandtotal :</label>
                                         <input type="number" name="grandtotal" id="grandtotal" class="form-control"
-                                            style="height:50px; font-size:28px" value="{{ $penawaran->total }}">
+                                            style="height:50px; font-size:28px" value="{{ $penawaran->total }}" readonly>
+                                        <input type="hidden" name="grandtotal_temp" id="grandtotal_temp" value="{{ $penawaran->grandtotal}}">
                                     </div>
                                 </div>
                             </div>
@@ -356,7 +367,7 @@
                                     '"/><select disabled class="form-control select2" style="width: 100%; height:32px;" id="m_unit_name[]" name="m_unit_name[]" required><option value="' +
                                     satuan + '">' + unitName + '</option></select>' +
                                     '</td>' +
-                                    '<td class="text-center"><button class="btn btn-danger removeOption"><i class="mdi mdi-delete"></i></button></td>' +
+                                    '<td class="text-center"><button type="button" class="btn btn-danger removeOption"><i class="mdi mdi-delete"></i></button></td>' +
                                     '</tr>';
                                 $('#requestDetail_addrow').find('tbody:last').append(tdAdd);
                             }
@@ -375,14 +386,15 @@
                 var total_req = qty.eq(i).val();
                 var total = amount.eq(i).val();
                 if (parseFloat(total_req) > parseFloat(total)) {
-                    // qty.eq(i).val('');
+                    qty.eq(i).val('');
                     $('#btnSubmit').prop('disabled', true)
                     alert('Quantity melebihi quantity penawaran.');
-                    $('#btnSubmit').preventDefault()
+                    // $('#btnSubmit').preventDefault()
                 } else {
                     $('#btnSubmit').prop('disabled', false)
                 }
             }
+            cekTotal()
         }
 
         function saveSelectedItem() {
@@ -400,8 +412,15 @@
             event.preventDefault();
             $(this).closest("tr").remove();
             saveSelectedItem()
+            cekTotal()
         });
 
+        $('.removeOption').click(function (e) { 
+            e.preventDefault();
+            $(this).closest("tr").remove();
+            saveSelectedItem()
+            cekTotal()
+        });
 
         function cekGudang() {
             saveSelectedItem()
@@ -439,6 +458,7 @@
             var item = $('[name^=m_item_id');
             var price = $('[name^=price');
             var volume = $('[name^=qty');
+            var biaya_pengiriman = parseInt($('#biaya_pengiriman').val());
             var total = 0,
                 total_item = 0,
                 total = 0;
@@ -450,6 +470,7 @@
                     total += (parseFloat(amount) * parseFloat(harga));
                 }
             }
+            total += biaya_pengiriman;
             $('#total').val(formatCurrency(total.toFixed(0)))
             $('#total_temp').val(total.toFixed(0))
             $('#diskon').val(0)

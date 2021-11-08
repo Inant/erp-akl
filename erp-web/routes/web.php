@@ -593,6 +593,7 @@ Route::group(['middleware' => 'auth','prefix' => '/customer'], function() {
     Route::get('/edit/{id}', 'CRM\Customer\CustomerController@editCustomer');
     Route::post('/update/{id}', 'CRM\Customer\CustomerController@updateCustomer');
     Route::get('/json', 'CRM\Customer\CustomerController@getCustomerJson');
+    Route::get('/acc/{id}', 'CRM\Customer\CustomerController@accCustomer');
     
 });
 

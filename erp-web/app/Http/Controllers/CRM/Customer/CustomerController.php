@@ -482,4 +482,17 @@ class CustomerController extends Controller
 
         return $response_array;
     }
+
+    public function accCustomer($id)
+    {
+        try {
+            \DB::table('customers')->where('id', $id)->update([
+                'acc_at' => date('Y-m-d H:i:s'),
+                'acc_by' => auth()->user()->id,
+            ]);
+        } catch (Exception $exception) {
+        }
+
+        return back()->withStatus('Berhasil menerima customer.');
+    }
 }

@@ -45,6 +45,8 @@
                                         <th class="text-center">Flag</th>
                                         <th class="text-center">Plafond Piutang</th>
                                         <th class="text-center">Jumlah Tagihan Maksimal</th>
+                                        <th class="text-center">Acc at</th>
+                                        <th class="text-center">Acc by</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -110,13 +112,33 @@
                     }
                 },
                 {
+                    "data": "acc_at",
+                    "class": "text-right",
+                    "render": function(data, type, row) {
+                        return row.acc_at
+                    }
+                },
+                {
+                    "data": "jumlah_tagihan_maksimal",
+                    "class": "text-right",
+                    "render": function(data, type, row) {
+                        return row.dirut_name
+                    }
+                },
+                {
                     "data": "id",
                     "render": function(data, type, row) {
+                        var accBtn = '';
+                        var role = {{ auth()->user()->role_id }};
+                        
+                        if(row.acc_at == null && role == 2) {
+                            accBtn = '<form action="'+url + '/customer/acc/' + row.id +'" method="get"><button type="submit" class="btn btn-info waves-effect waves-light btn-sm" onclick="javasciprt: return confirm(\'Anda yakin akan menerima customer ini ?\')">Acc</button></form>';
+                        }
                         return '<div class="text-center"><a hidden href="' + url + '/customer/detail/' + row
                             .id +
                             '"><button type="button" class="btn btn-info waves-effect waves-light btn-sm">Detail</button></a><a href="' +
                             url + '/customer/edit/' + row.id +
-                            '"><button type="button" class="btn btn-success waves-effect waves-light btn-sm">Edit</button></a></div>'
+                            '"><button type="button" class="btn btn-success waves-effect waves-light btn-sm">Edit</button></a>'+accBtn+'</div>'
                     }
                 }
             ],
